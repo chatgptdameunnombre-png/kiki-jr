@@ -562,7 +562,7 @@
         <div class="fgrid" style="max-width:520px">
           <div class="fg full">
             <label>URL Base</label>
-            <input type="url" id="cfg-webhook" placeholder="https://tu-n8n.hostinger.com/webhook" oninput="saveConfig()"/>
+            <input type="url" id="cfg-webhook" placeholder="https://n8n.srv1473142.hstgr.cloud/webhook" oninput="saveConfig()"/>
           </div>
           <div class="fg" style="justify-content:flex-end">
             <label>&nbsp;</label>
@@ -1230,7 +1230,8 @@ function savePerfil() {
 
 function loadConfig() {
   cfg.gemini = localStorage.getItem('GEMINI_KEY')||'';
-  cfg.webhook = localStorage.getItem('BASE_URL')||'';
+  cfg.webhook = localStorage.getItem('BASE_URL')||'https://n8n.srv1473142.hstgr.cloud/webhook';
+  if(!localStorage.getItem('BASE_URL')) localStorage.setItem('BASE_URL', cfg.webhook);
   const g=document.getElementById('cfg-gemini'), w=document.getElementById('cfg-webhook');
   if(g) g.value=cfg.gemini;
   if(w) w.value=cfg.webhook;
