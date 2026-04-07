@@ -8,18 +8,39 @@
   <style>
     :root{--bg:#000;--surface:#0a0a0a;--s2:#111;--s3:#1a1a1a;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);--accent:#ef4444;--ah:#ff6b6b;--am:rgba(239,68,68,.15);--ok:#22c55e;--okm:rgba(34,197,94,.12);--warn:#f59e0b;--warnm:rgba(245,158,11,.15);--blue:#3b82f6;--bluem:rgba(59,130,246,.15);--danger:#ef4444;--dangerm:rgba(239,68,68,.15);--text:#fff;--t2:#ccc;--t3:#666;--sw:240px;--r:10px;--rs:6px;--font:'Space Grotesk',system-ui,sans-serif}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;display:flex;overflow:hidden;animation:fadeIn .4s ease}
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    #sidebar{width:var(--sw);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100}
-    .sb-logo{padding:18px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;display:flex;overflow:hidden}
+    /* ─── SPLASH SCREEN ─── */
+    #splash{position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;transition:opacity .6s ease,visibility .6s}
+    #splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+    #splash svg{animation:splashLogo .8s ease forwards}
+    #splash .splash-text{font-size:28px;font-weight:800;color:#fff;letter-spacing:-1px;opacity:0;animation:splashText .6s ease .4s forwards}
+    #splash .splash-sub{font-size:13px;color:var(--t3);opacity:0;animation:splashText .6s ease .7s forwards}
+    @keyframes splashLogo{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+    @keyframes splashText{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+    /* ─── SIDEBAR ─── */
+    #sidebar{width:var(--sw);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100;transition:width .25s ease,transform .25s ease}
+    #sidebar.collapsed{width:54px}
+    #sidebar.collapsed .sb-text,#sidebar.collapsed .sb-label,#sidebar.collapsed .nav-item span:not(.nb),#sidebar.collapsed .sb-foot span{display:none}
+    #sidebar.collapsed .nav-item{justify-content:center;padding:10px}
+    #sidebar.collapsed .nav-item svg{width:18px;height:18px}
+    #sidebar.collapsed .sb-logo{justify-content:center;padding:14px 10px}
+    #sidebar.collapsed .nb{position:absolute;top:2px;right:2px;font-size:8px;padding:0 4px;min-width:14px}
+    #main{margin-left:var(--sw);transition:margin-left .25s ease}
+    body.sb-collapsed #main{margin-left:54px}
+    .sb-toggle{width:30px;height:30px;border:none;background:transparent;color:var(--t2);cursor:pointer;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;transition:all .14s;flex-shrink:0}
+    .sb-toggle:hover{background:var(--s2);color:var(--text)}
+    .sb-logo{padding:14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .14s}
+    .sb-logo:hover{background:var(--s2)}
     .sb-icon{width:34px;height:34px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
     .sb-text strong{font-size:14.5px;font-weight:700;display:block}.sb-text span{font-size:11px;color:var(--t2)}
     .sb-nav{padding:10px 8px;flex:1;overflow-y:auto}
     .sb-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:8px 10px 4px}
-    .nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--rs);cursor:pointer;transition:background .18s,color .18s;font-size:13.5px;color:var(--t2);margin-bottom:2px;user-select:none;position:relative}
-    .nav-item:hover{background:var(--s2);color:var(--text)}.nav-item.active{background:var(--am);color:var(--ah)}
+    .nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--rs);cursor:pointer;transition:all .2s ease;font-size:13.5px;color:var(--t2);margin-bottom:2px;user-select:none;position:relative}
+    .nav-item:hover{background:var(--s2);color:var(--text);transform:translateX(3px)}.nav-item:hover svg{color:var(--accent);transition:color .2s}
+    .nav-item.active{background:var(--am);color:var(--ah)}
     .nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--accent);border-radius:0 3px 3px 0}
-    .nav-item svg{width:15px;height:15px;flex-shrink:0}
+    .nav-item svg{width:15px;height:15px;flex-shrink:0;transition:color .2s}
+    #sidebar.collapsed .nav-item:hover{transform:translateX(0);background:var(--am)}
     .nb{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px;min-width:18px;text-align:center}
     .sb-foot{padding:11px 14px;border-top:1px solid var(--border);font-size:12px;color:var(--t3);display:flex;align-items:center;gap:7px}
     .sdot{width:7px;height:7px;border-radius:50%;background:var(--ok);flex-shrink:0;animation:pdot 2s infinite}
@@ -34,6 +55,35 @@
     @keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
     #page-chat{display:none;flex-direction:column;height:100vh}
     #page-chat.active{display:flex;animation:pageIn .22s ease forwards}
+    /* ─── CHAT SUGGESTIONS ─── */
+    .chat-welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:40px;opacity:1;transition:opacity .3s}
+    .chat-welcome.hidden{display:none}
+    .chat-welcome svg{opacity:.6}
+    .chat-welcome h2{font-size:22px;font-weight:700;color:var(--text)}
+    .chat-welcome p{font-size:13px;color:var(--t3);margin-top:-12px}
+    .suggestion-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:500px}
+    .suggestion-chip{padding:8px 16px;border-radius:100px;border:1px solid var(--border2);background:transparent;color:var(--t2);font-size:12.5px;font-family:var(--font);cursor:pointer;transition:all .18s;white-space:nowrap}
+    .suggestion-chip:hover{background:var(--am);border-color:var(--accent);color:var(--ah);transform:translateY(-1px)}
+    /* ─── FINANZAS ─── */
+    .fin-toggle{display:flex;gap:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);margin-bottom:18px;width:fit-content}
+    .fin-toggle-btn{padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;transition:all .14s;border:none;font-family:var(--font);background:transparent;color:var(--t2)}
+    .fin-toggle-btn.active{background:var(--accent);color:#fff}
+    .fin-toggle-btn:hover:not(.active){background:var(--s2);color:var(--text)}
+    .fin-phase{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;transition:border-color .2s}
+    .fin-phase:hover{border-color:var(--border2)}
+    .fin-phase-title{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .fin-check{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:13px;color:var(--t2);line-height:1.5}
+    .fin-check input[type=checkbox]{margin-top:3px;accent-color:var(--accent)}
+    .fin-dist{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+    .fin-dist-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center}
+    .fin-dist-pct{font-size:24px;font-weight:800;color:var(--accent)}
+    .fin-dist-label{font-size:11px;color:var(--t3);margin-top:4px}
+    .fin-table{width:100%;border-collapse:collapse;font-size:13px}
+    .fin-table th{background:var(--s2);padding:10px 13px;text-align:left;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+    .fin-table td{padding:10px 13px;border-bottom:1px solid var(--border);color:var(--t2)}
+    .fin-table input{background:var(--s2);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:var(--rs);font-size:13px;font-family:var(--font);width:100%;outline:none}
+    .fin-table input:focus{border-color:var(--accent)}
+    .fin-total{font-weight:700;color:var(--ok);font-size:15px}
     .btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;transition:all .14s;border:none;font-family:var(--font)}
     .btn:active{transform:scale(.97)}
     .btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--ah)}
@@ -230,8 +280,21 @@
 </head>
 <body>
 
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <svg width="64" height="64" viewBox="0 0 34 34" fill="none">
+    <defs><linearGradient id="sp-grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs>
+    <rect width="34" height="34" rx="9" fill="url(#sp-grad)"/>
+    <text x="5" y="23" font-family="Space Grotesk,system-ui,sans-serif" font-size="16" font-weight="800" fill="white" letter-spacing="-0.5">KJ</text>
+    <circle cx="28" cy="8" r="2.5" fill="rgba(255,255,255,.4)"/>
+    <path d="M24 26 L28 22 L28 28 Z" fill="rgba(255,255,255,.2)"/>
+  </svg>
+  <div class="splash-text">Kiki Jr</div>
+  <div class="splash-sub">Co-piloto IA · Agencia</div>
+</div>
+
 <nav id="sidebar">
-  <div class="sb-logo">
+  <div class="sb-logo" onclick="openSettingsModal()">
     <div style="flex-shrink:0;position:relative">
       <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -250,41 +313,42 @@
       <div id="conn-dot" style="position:absolute;bottom:1px;right:1px;width:9px;height:9px;background:var(--ok);border-radius:50%;border:2px solid var(--surface);transition:background .3s"></div>
     </div>
     <div class="sb-text"><strong>Kiki Jr</strong><span>Co-piloto IA · Agencia</span></div>
+    <button class="sb-toggle" onclick="event.stopPropagation();toggleSidebar()" title="Colapsar sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
   </div>
   <div class="sb-nav">
     <div class="sb-label">Principal</div>
     <div class="nav-item active" data-page="chat">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Kiki Jr
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Kiki Jr</span>
     </div>
     <div class="nav-item" data-page="dashboard">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span>
       <span class="nb" id="alert-badge" style="display:none">0</span>
+    </div>
+    <div class="nav-item" data-page="finanzas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Finanzas</span>
     </div>
     <div class="divider"></div>
     <div class="sb-label">Datos</div>
     <div class="nav-item" data-page="clientes">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clientes
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Clientes</span>
     </div>
     <div class="nav-item" data-page="productos">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Productos
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span>Productos</span>
     </div>
     <div class="nav-item" data-page="ideas">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="10" y1="21" x2="14" y2="21"/></svg>Ideas
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="10" y1="21" x2="14" y2="21"/></svg><span>Ideas</span>
     </div>
     <div class="nav-item" data-page="calendario">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendario
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Calendario</span>
     </div>
     <div class="nav-item" data-page="notas">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Notas
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span>Notas</span>
       <span class="nb" id="notas-badge" style="display:none">0</span>
     </div>
     <div class="nav-item" data-page="archivos">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Archivos
-    </div>
-    <div class="divider"></div>
-    <div class="sb-label">Sistema</div>
-    <div class="nav-item" data-page="settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>Configuración
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Archivos</span>
     </div>
   </div>
   <div class="sb-foot"><div class="sdot"></div><span id="conn-status">Online · Listo</span></div>
@@ -298,7 +362,20 @@
       <div class="chat-avatar" style="font-size:13px;font-weight:800;letter-spacing:-0.5px">KJ</div>
       <div class="chat-hdr-info"><strong>Kiki Jr</strong><span>● Online — Co-piloto IA</span></div>
     </div>
-    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-welcome" id="chat-welcome">
+      <svg width="56" height="56" viewBox="0 0 34 34" fill="none"><defs><linearGradient id="cw-grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><rect width="34" height="34" rx="9" fill="url(#cw-grad)"/><text x="5" y="23" font-family="Space Grotesk,system-ui,sans-serif" font-size="16" font-weight="800" fill="white" letter-spacing="-0.5">KJ</text></svg>
+      <h2>¿En qué te ayudo hoy?</h2>
+      <p>Elige una sugerencia o escribe lo que necesites</p>
+      <div class="suggestion-chips">
+        <button class="suggestion-chip" onclick="sendSuggestion('¿Cómo van mis clientes?')">¿Cómo van mis clientes?</button>
+        <button class="suggestion-chip" onclick="sendSuggestion('Dame el resumen del día')">Resumen del día</button>
+        <button class="suggestion-chip" onclick="sendSuggestion('Agenda una llamada de seguimiento')">Agendar llamada</button>
+        <button class="suggestion-chip" onclick="sendSuggestion('Tengo una nueva idea de negocio')">Nueva idea</button>
+        <button class="suggestion-chip" onclick="sendSuggestion('¿Cuánto tengo invertido?')">Mis inversiones</button>
+        <button class="suggestion-chip" onclick="sendSuggestion('¿Cuál es mi plan financiero?')">Plan financiero</button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages" style="display:none"></div>
     <div class="chat-input-area">
       <textarea class="chat-input" id="chat-input" placeholder="Escribe algo... ej: ¿cómo va el negocio?" rows="1"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
@@ -429,6 +506,123 @@
     </div>
   </div>
 
+  <!-- FINANZAS -->
+  <div id="page-finanzas" class="page">
+    <div class="sec-hdr">
+      <div><div class="sec-title">Finanzas</div><div class="sec-sub">Tu plan y registro financiero</div></div>
+      <div class="sec-acts">
+        <button class="btn btn-g btn-sm" onclick="loadFinanzas()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>Sincronizar
+        </button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="fin-toggle">
+        <button class="fin-toggle-btn active" id="fin-btn-plan" onclick="showFinTab('plan')">Plan Financiero</button>
+        <button class="fin-toggle-btn" id="fin-btn-actual" onclick="showFinTab('actual')">Finanzas Actuales</button>
+      </div>
+
+      <!-- PLAN FINANCIERO -->
+      <div id="fin-plan">
+        <div class="fin-dist">
+          <div class="fin-dist-card"><div class="fin-dist-pct">40%</div><div class="fin-dist-label">Fondo Emergencias</div></div>
+          <div class="fin-dist-card"><div class="fin-dist-pct" style="color:#3b82f6">25%</div><div class="fin-dist-label">PPR (GBM/Fintual)</div></div>
+          <div class="fin-dist-card"><div class="fin-dist-pct" style="color:#22c55e">25%</div><div class="fin-dist-label">ETFs (VOO/SCHD)</div></div>
+          <div class="fin-dist-card"><div class="fin-dist-pct" style="color:#a855f7">10%</div><div class="fin-dist-label">Personal</div></div>
+        </div>
+
+        <div class="fin-phase">
+          <div class="fin-phase-title">Fase 1 — Primer cliente (0 a 30 días)</div>
+          <div class="fin-check"><input type="checkbox"><span>Cerrar primer cliente pagando — Transferencia recibida</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Firmar contrato con cliente (padre como rep.) — Contrato firmado guardado</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Separar IVA del primer pago inmediatamente</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Hacer primera inversión: VOO en Hapi — Mínimo $500 comprados</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Abrir PPR en GBM o Fintual (con papá) — Cuenta abierta</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Documentar el proceso de onboarding del cliente — 1 página SOP</span></div>
+        </div>
+
+        <div class="fin-phase">
+          <div class="fin-phase-title">Fase 2 — Tres clientes (30 a 90 días)</div>
+          <div class="fin-check"><input type="checkbox"><span>Cerrar segundo cliente pagando</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Cerrar tercer cliente pagando</span></div>
+          <div class="fin-check"><input type="checkbox"><span>RFC activo vía papá (alta SAT RESICO)</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Primera declaración ISR e IVA — antes del día 17</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Fondo emergencias: $10,000 MXN acumulados</span></div>
+          <div class="fin-check"><input type="checkbox"><span>PPR: $3,000+ MXN aportados</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Cartera Hapi: $3,000+ en VOO/SCHD</span></div>
+        </div>
+
+        <div class="fin-phase">
+          <div class="fin-phase-title">Fase 3 — Cinco clientes (3 a 6 meses)</div>
+          <div class="fin-check"><input type="checkbox"><span>Cerrar cuarto y quinto cliente — $25,000/mes brutos</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Fondo emergencias lleno: $20,000+ MXN</span></div>
+          <div class="fin-check"><input type="checkbox"><span>PPR: $6,000+ MXN aportados</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Cartera Hapi: $8,000+ en VOO/SCHD/AAPL</span></div>
+          <div class="fin-check"><input type="checkbox"><span>SOP de onboarding completo y probado</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Subir precio a nuevos clientes a $6,000/mes</span></div>
+        </div>
+
+        <div class="fin-phase">
+          <div class="fin-phase-title">Fase 4 — Diez clientes y escala (6 a 18 meses)</div>
+          <div class="fin-check"><input type="checkbox"><span>Cerrar clientes 6 al 10 — $50,000-$70,000/mes brutos</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Hacer primeros 50 pitches de venta documentados</span></div>
+          <div class="fin-check"><input type="checkbox"><span>PPR: $24,000+ aportados</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Cartera Hapi: $25,000+ MXN</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Primer cliente de nicho diferente (no barbería)</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Evaluar si contratar primer asistente técnico</span></div>
+        </div>
+
+        <div class="fin-phase">
+          <div class="fin-phase-title" style="color:var(--warn)">Metas de Largo Plazo</div>
+          <div class="fin-check"><input type="checkbox"><span>RFC propio a tu nombre — al cumplir 18</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Empresa SAS constituida — cuando ingresos >$100k/mes</span></div>
+          <div class="fin-check"><input type="checkbox"><span>$100,000 MXN en inversiones totales</span></div>
+          <div class="fin-check"><input type="checkbox"><span>$500,000 MXN en inversiones — antes de 2027</span></div>
+          <div class="fin-check"><input type="checkbox"><span>PPR con $100,000+ MXN — alrededor de los 21-22</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Primer contrato empresa mediana ($15k+/mes)</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Padres cubiertos — ingresos netos >$130k/mes</span></div>
+          <div class="fin-check"><input type="checkbox"><span>Ingresos de dividendos: $5,000/mes pasivos</span></div>
+        </div>
+      </div>
+
+      <!-- FINANZAS ACTUALES -->
+      <div id="fin-actual" style="display:none">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-hdr"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Mis Inversiones</div></div>
+          <div class="table-wrap">
+            <table class="fin-table">
+              <thead><tr><th>Instrumento</th><th>Plataforma</th><th>Saldo Actual</th><th>Meta</th></tr></thead>
+              <tbody id="fin-inv-body">
+                <tr><td>Fondo Emergencias</td><td>BBVA</td><td><input type="text" id="fin-emergencias" placeholder="$0" oninput="saveFinanzasLocal()"></td><td>$20,000</td></tr>
+                <tr><td>PPR</td><td>GBM/Fintual</td><td><input type="text" id="fin-ppr" placeholder="$0" oninput="saveFinanzasLocal()"></td><td>$1,000-3,000/mes</td></tr>
+                <tr><td>VOO (S&P 500)</td><td>Hapi</td><td><input type="text" id="fin-voo" placeholder="$0" oninput="saveFinanzasLocal()"></td><td>Prioridad 1</td></tr>
+                <tr><td>SCHD (Dividendos)</td><td>Hapi</td><td><input type="text" id="fin-schd" placeholder="$0" oninput="saveFinanzasLocal()"></td><td>Cuando VOO >$10k</td></tr>
+                <tr><td>AAPL (Apple)</td><td>Hapi</td><td><input type="text" id="fin-aapl" placeholder="$0" oninput="saveFinanzasLocal()"></td><td>Complemento</td></tr>
+                <tr><td>KO (Coca-Cola)</td><td>Hapi</td><td><input type="text" id="fin-ko" placeholder="$0" oninput="saveFinanzasLocal()"></td><td>Estabilizador</td></tr>
+                <tr><td>Bitcoin</td><td>—</td><td><input type="text" id="fin-btc" placeholder="$0" oninput="saveFinanzasLocal()"></td><td>Solo con fondo lleno</td></tr>
+                <tr style="background:var(--s2)"><td colspan="2" style="font-weight:700;color:var(--text)">TOTAL INVERSIONES</td><td colspan="2" class="fin-total" id="fin-total-inv">$0</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Ingresos Mensuales</div>
+            <button class="btn btn-p btn-sm" onclick="addIngreso()">+ Cliente</button>
+          </div>
+          <div class="table-wrap">
+            <table class="fin-table">
+              <thead><tr><th>Cliente</th><th>Monto/mes</th><th>Desde</th><th></th></tr></thead>
+              <tbody id="fin-ing-body"></tbody>
+              <tfoot><tr style="background:var(--s2)"><td style="font-weight:700;color:var(--text)">TOTAL MENSUAL</td><td class="fin-total" id="fin-total-ing" colspan="2">$0</td><td></td></tr></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- NOTAS -->
   <div id="page-notas" class="page">
     <div class="sec-hdr" style="padding-bottom:12px">
@@ -502,33 +696,7 @@
     </div>
   </div>
 
-  <!-- CONFIGURACIÓN -->
-  <div id="page-settings" class="page">
-    <div class="sec-hdr"><div><div class="sec-title">Configuración</div><div class="sec-sub">Conecta tus servicios y personaliza Kiki Jr</div></div></div>
-    <div class="content">
-      <div class="settings-card">
-        <div class="settings-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Perfil de Kiki
-        </div>
-        <div class="fgrid" style="max-width:600px">
-          <div class="fg"><label>¿Cómo prefieres los outputs?</label><select id="pref-formato" onchange="savePerfil()"><option value="bullets">Bullets cortos</option><option value="parrafos">Párrafos</option><option value="tabla">Tabla</option></select></div>
-          <div class="fg"><label>Horas disponibles por día</label><input type="text" id="pref-horas" placeholder="ej: 8am–2pm, 6pm–10pm" oninput="savePerfil()"/></div>
-          <div class="fg"><label>Zonas de Guadalajara</label><input type="text" id="pref-zonas" placeholder="ej: López Mateos Sur" oninput="savePerfil()"/></div>
-          <div class="fg"><label>Servicio principal</label><input type="text" id="pref-servicio" placeholder="ej: Agente IA WhatsApp + n8n" oninput="savePerfil()"/></div>
-          <div class="fg full"><label>Notas adicionales</label><textarea id="pref-notas" placeholder="Contexto extra para Kiki Jr..." oninput="savePerfil()"></textarea></div>
-        </div>
-      </div>
-      <div class="settings-card">
-        <div class="settings-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>Webhooks n8n
-        </div>
-        <div class="fgrid" style="max-width:520px">
-          <div class="fg full"><label>URL Base</label><input type="url" id="cfg-webhook" placeholder="https://n8n.srv1473142.hstgr.cloud/webhook" oninput="saveConfig()"/></div>
-          <div class="fg" style="justify-content:flex-end"><label>&nbsp;</label><button class="btn btn-p" onclick="testConnection()" style="align-self:flex-start">Probar conexión</button></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- CONFIGURACIÓN (ahora es modal, se abre al click en KJ logo) -->
 
 </main>
 
@@ -661,6 +829,37 @@
   </div>
 </div>
 
+<!-- Modal: Settings -->
+<div class="modal-ov" id="m-settings">
+  <div class="modal modal-wide">
+    <div class="modal-hdr">
+      <div><div class="modal-title">Configuración</div><div class="modal-sub">Conecta tus servicios y personaliza Kiki Jr</div></div>
+      <button class="modal-x" onclick="closeModal('m-settings')">✕</button>
+    </div>
+    <div class="settings-card" style="margin-bottom:14px">
+      <div class="settings-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Perfil de Kiki
+      </div>
+      <div class="fgrid" style="max-width:600px">
+        <div class="fg"><label>¿Cómo prefieres los outputs?</label><select id="pref-formato" onchange="savePerfil()"><option value="bullets">Bullets cortos</option><option value="parrafos">Párrafos</option><option value="tabla">Tabla</option></select></div>
+        <div class="fg"><label>Horas disponibles por día</label><input type="text" id="pref-horas" placeholder="ej: 8am–2pm, 6pm–10pm" oninput="savePerfil()"/></div>
+        <div class="fg"><label>Zonas de Guadalajara</label><input type="text" id="pref-zonas" placeholder="ej: López Mateos Sur" oninput="savePerfil()"/></div>
+        <div class="fg"><label>Servicio principal</label><input type="text" id="pref-servicio" placeholder="ej: Agente IA WhatsApp + n8n" oninput="savePerfil()"/></div>
+        <div class="fg full"><label>Notas adicionales</label><textarea id="pref-notas" placeholder="Contexto extra para Kiki Jr..." oninput="savePerfil()"></textarea></div>
+      </div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>Webhooks n8n
+      </div>
+      <div class="fgrid" style="max-width:520px">
+        <div class="fg full"><label>URL Base</label><input type="url" id="cfg-webhook" placeholder="https://n8n.srv1473142.hstgr.cloud/webhook" oninput="saveConfig()"/></div>
+        <div class="fg" style="justify-content:flex-end"><label>&nbsp;</label><button class="btn btn-p" onclick="testConnection()" style="align-self:flex-start">Probar conexión</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal: File Analysis -->
 <div class="modal-ov" id="m-file-analysis">
   <div class="modal">
@@ -703,10 +902,14 @@ async function apiPost(path,data){
 
 /* ─── NAV ─── */
 function navigate(page){
+  if(page==='settings'){openSettingsModal();return;}
+  const pageEl=document.getElementById('page-'+page);
+  if(!pageEl)return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item[data-page]').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.querySelector(`[data-page="${page}"]`).classList.add('active');
+  pageEl.classList.add('active');
+  const navEl=document.querySelector(`[data-page="${page}"]`);
+  if(navEl)navEl.classList.add('active');
   document.getElementById('main').scrollTop=0;
   if(page==='dashboard')renderDash();
   if(page==='clientes')loadClientes();
@@ -714,14 +917,52 @@ function navigate(page){
   if(page==='ideas')loadIdeas();
   if(page==='calendario')renderCalendar();
   if(page==='notas')loadNotas();
+  if(page==='finanzas')loadFinanzasLocal();
   if(page==='archivos')loadArchivos();
 }
 document.querySelectorAll('.nav-item[data-page]').forEach(el=>{
   el.addEventListener('click',()=>navigate(el.dataset.page));
 });
 
+/* ─── SPLASH ─── */
+function hideSplash(){document.getElementById('splash').classList.add('hide');setTimeout(()=>{document.getElementById('splash').style.display='none'},700);}
+
+/* ─── SIDEBAR TOGGLE ─── */
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  sb.classList.toggle('collapsed');
+  document.body.classList.toggle('sb-collapsed');
+  localStorage.setItem('sb_collapsed',sb.classList.contains('collapsed'));
+}
+function restoreSidebar(){
+  if(localStorage.getItem('sb_collapsed')==='true'){
+    document.getElementById('sidebar').classList.add('collapsed');
+    document.body.classList.add('sb-collapsed');
+  }
+}
+
+/* ─── SETTINGS MODAL ─── */
+function openSettingsModal(){openModal('m-settings');}
+
+/* ─── CHAT SUGGESTIONS ─── */
+function sendSuggestion(text){
+  document.getElementById('chat-welcome').classList.add('hidden');
+  document.getElementById('chat-messages').style.display='flex';
+  document.getElementById('chat-input').value=text;
+  sendMsg();
+}
+function showChatMessages(){
+  const welcome=document.getElementById('chat-welcome');
+  const msgs=document.getElementById('chat-messages');
+  if(welcome&&!welcome.classList.contains('hidden')){
+    welcome.classList.add('hidden');
+    msgs.style.display='flex';
+  }
+}
+
 /* ─── CHAT ─── */
 function sendMsg(){
+  showChatMessages();
   const input=document.getElementById('chat-input');
   const text=input.value.trim();
   if(!text)return;
@@ -1228,6 +1469,110 @@ async function deleteArchivo(id,rowNum){
   }catch(e){toast('Error: '+e.message,'err');}
 }
 
+/* ─── FINANZAS ─── */
+let finIngresos=[];
+
+function showFinTab(tab){
+  document.getElementById('fin-plan').style.display=tab==='plan'?'block':'none';
+  document.getElementById('fin-actual').style.display=tab==='actual'?'block':'none';
+  document.getElementById('fin-btn-plan').classList.toggle('active',tab==='plan');
+  document.getElementById('fin-btn-actual').classList.toggle('active',tab==='actual');
+  if(tab==='actual')renderIngresos();
+}
+
+function saveFinanzasLocal(){
+  const data={
+    emergencias:document.getElementById('fin-emergencias').value,
+    ppr:document.getElementById('fin-ppr').value,
+    voo:document.getElementById('fin-voo').value,
+    schd:document.getElementById('fin-schd').value,
+    aapl:document.getElementById('fin-aapl').value,
+    ko:document.getElementById('fin-ko').value,
+    btc:document.getElementById('fin-btc').value,
+    ingresos:finIngresos
+  };
+  localStorage.setItem('finanzas_kiki',JSON.stringify(data));
+  calcTotalInv();
+  // Sync to Sheets in background
+  apiPost('/guardar-finanzas',data).catch(()=>{});
+}
+
+function loadFinanzasLocal(){
+  const saved=JSON.parse(localStorage.getItem('finanzas_kiki')||'{}');
+  if(saved.emergencias)document.getElementById('fin-emergencias').value=saved.emergencias;
+  if(saved.ppr)document.getElementById('fin-ppr').value=saved.ppr;
+  if(saved.voo)document.getElementById('fin-voo').value=saved.voo;
+  if(saved.schd)document.getElementById('fin-schd').value=saved.schd;
+  if(saved.aapl)document.getElementById('fin-aapl').value=saved.aapl;
+  if(saved.ko)document.getElementById('fin-ko').value=saved.ko;
+  if(saved.btc)document.getElementById('fin-btc').value=saved.btc;
+  finIngresos=saved.ingresos||[];
+  renderIngresos();
+  calcTotalInv();
+}
+
+async function loadFinanzas(){
+  toast('Sincronizando finanzas...','info');
+  try{
+    const r=await api('/obtener-finanzas');const d=await r.json();
+    if(d&&d.emergencias){
+      localStorage.setItem('finanzas_kiki',JSON.stringify(d));
+      loadFinanzasLocal();
+      toast('Finanzas sincronizadas','ok');
+    }
+  }catch{toast('Usando datos locales','info');}
+  loadFinanzasLocal();
+}
+
+function calcTotalInv(){
+  const ids=['fin-emergencias','fin-ppr','fin-voo','fin-schd','fin-aapl','fin-ko','fin-btc'];
+  let total=0;
+  ids.forEach(id=>{
+    const v=document.getElementById(id);
+    if(v)total+=parseFloat(v.value.replace(/[^0-9.-]/g,''))||0;
+  });
+  const el=document.getElementById('fin-total-inv');
+  if(el)el.textContent='$'+total.toLocaleString('es-MX');
+}
+
+function addIngreso(){
+  finIngresos.push({cliente:'',monto:'',desde:today()});
+  renderIngresos();
+}
+
+function renderIngresos(){
+  const el=document.getElementById('fin-ing-body');
+  if(!el)return;
+  if(!finIngresos.length){
+    el.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--t3);padding:20px">Sin ingresos registrados. Usa "+ Cliente" para agregar.</td></tr>';
+    document.getElementById('fin-total-ing').textContent='$0';
+    return;
+  }
+  el.innerHTML=finIngresos.map((ing,i)=>`
+    <tr>
+      <td><input type="text" value="${ing.cliente}" placeholder="Nombre cliente" onchange="updateIngreso(${i},'cliente',this.value)"></td>
+      <td><input type="text" value="${ing.monto}" placeholder="$0" onchange="updateIngreso(${i},'monto',this.value)"></td>
+      <td><input type="date" value="${ing.desde}" onchange="updateIngreso(${i},'desde',this.value)"></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeIngreso(${i})">✕</button></td>
+    </tr>
+  `).join('');
+  let total=0;
+  finIngresos.forEach(ing=>total+=parseFloat(String(ing.monto).replace(/[^0-9.-]/g,''))||0);
+  document.getElementById('fin-total-ing').textContent='$'+total.toLocaleString('es-MX');
+}
+
+function updateIngreso(i,field,val){
+  finIngresos[i][field]=val;
+  saveFinanzasLocal();
+  renderIngresos();
+}
+
+function removeIngreso(i){
+  finIngresos.splice(i,1);
+  saveFinanzasLocal();
+  renderIngresos();
+}
+
 /* ─── NOTAS (Apple Notes style + Google Sheets sync) ─── */
 async function loadNotas(){
   try{
@@ -1462,8 +1807,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
 /* ─── INIT ─── */
 (function init(){
   loadConfig();
+  restoreSidebar();
   notas=JSON.parse(localStorage.getItem('notas_local')||'[]');
-  appendMsg('bot','Buenos días Kiki. Soy Kiki Jr, tu co-piloto.\n¿En qué te ayudo hoy?');
   renderCalendar();
   if(!navigator.onLine)setConnDot(false);
   const base=getBase();
@@ -1472,6 +1817,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
   }
   healthCheck();
   setInterval(healthCheck,60000);
+  // Splash screen - hide after 2s
+  setTimeout(hideSplash,2000);
 })();
 </script>
 </body>
