@@ -185,6 +185,42 @@
     .toast.ok{border-left:3px solid var(--ok)}.toast.err{border-left:3px solid var(--danger)}.toast.info{border-left:3px solid var(--accent)}
     @keyframes tin{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
     .empty{text-align:center;padding:52px 20px;color:var(--t3)}.empty .eicon{font-size:36px;margin-bottom:12px}.empty p{font-size:13.5px;line-height:1.6}
+    /* ─── NOTES SECTION (Apple Notes style) ─── */
+    .notes-container{display:grid;grid-template-columns:260px 1fr;height:calc(100vh - 60px);gap:0}
+    .notes-sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+    .notes-search{padding:10px;border-bottom:1px solid var(--border)}
+    .notes-search input{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);padding:8px 10px 8px 32px;border-radius:8px;font-size:12.5px;font-family:var(--font);outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center}
+    .notes-search input:focus{border-color:var(--accent)}
+    .notes-list{flex:1;overflow-y:auto;padding:4px}
+    .note-item{padding:10px 12px;border-radius:8px;cursor:pointer;transition:background .14s;margin-bottom:2px;border-left:3px solid transparent}
+    .note-item:hover{background:var(--s2)}
+    .note-item.active{background:var(--am);border-left-color:var(--accent)}
+    .note-item-title{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .note-item-preview{font-size:11.5px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+    .note-item-date{font-size:10px;color:var(--t3);margin-top:3px}
+    .note-item-pin{color:var(--accent);font-size:10px;margin-left:4px}
+    .notes-editor{display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+    .note-editor-toolbar{padding:8px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;background:var(--surface);flex-shrink:0}
+    .note-toolbar-btn{width:30px;height:30px;border:none;background:transparent;color:var(--t2);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s;font-size:14px}
+    .note-toolbar-btn:hover{background:var(--s2);color:var(--text)}
+    .note-toolbar-btn.active{background:var(--am);color:var(--accent)}
+    .note-toolbar-sep{width:1px;height:20px;background:var(--border);margin:0 4px}
+    .note-title-input{width:100%;background:transparent;border:none;color:var(--text);font-size:22px;font-weight:700;font-family:var(--font);padding:16px 20px 4px;outline:none}
+    .note-title-input::placeholder{color:var(--t3)}
+    .note-body-input{flex:1;width:100%;background:transparent;border:none;color:var(--t2);font-size:14px;line-height:1.7;font-family:var(--font);padding:8px 20px 20px;outline:none;resize:none;overflow-y:auto}
+    .note-body-input::placeholder{color:var(--t3)}
+    .note-tags{padding:6px 20px 12px;display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+    .note-tag{font-size:10px;padding:2px 8px;border-radius:100px;background:var(--am);color:var(--ah);cursor:pointer;transition:opacity .14s}
+    .note-tag:hover{opacity:.7}
+    .note-tag-add{font-size:10px;padding:2px 8px;border-radius:100px;background:var(--s2);color:var(--t3);cursor:pointer;border:1px dashed var(--border)}
+    .note-tag-add:hover{color:var(--text);border-color:var(--t3)}
+    .note-empty-state{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--t3)}
+    .note-empty-state svg{width:48px;height:48px;opacity:.3}
+    .note-cat-select{background:var(--s2);border:1px solid var(--border);color:var(--t2);padding:4px 8px;border-radius:6px;font-size:11px;font-family:var(--font);outline:none}
+    .note-cat-select:focus{border-color:var(--accent)}
+    .note-status{font-size:10px;color:var(--t3);padding:0 20px 8px;display:flex;align-items:center;gap:5px}
+    .note-status .synced{color:var(--ok)}
+    .note-status .pending{color:var(--warn)}
     .skeleton{background:linear-gradient(90deg,var(--s2) 25%,var(--s3) 50%,var(--s2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--rs);height:14px}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--t3)}
@@ -197,7 +233,20 @@
 <nav id="sidebar">
   <div class="sb-logo">
     <div style="flex-shrink:0;position:relative">
-      <div style="width:34px;height:34px;background:var(--accent);border-radius:50%"></div>
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="kj-grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#ef4444"/>
+            <stop offset="100%" stop-color="#f97316"/>
+          </linearGradient>
+          <filter id="kj-glow"><feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#ef4444" flood-opacity=".35"/></filter>
+        </defs>
+        <rect width="34" height="34" rx="9" fill="url(#kj-grad)" filter="url(#kj-glow)"/>
+        <text x="5" y="23" font-family="Space Grotesk,system-ui,sans-serif" font-size="16" font-weight="800" fill="white" letter-spacing="-0.5">KJ</text>
+        <circle cx="28" cy="8" r="2.5" fill="rgba(255,255,255,.4)"/>
+        <path d="M24 26 L28 22 L28 28 Z" fill="rgba(255,255,255,.2)"/>
+        <rect x="23" y="14" width="6" height="1.5" rx=".75" fill="rgba(255,255,255,.18)" transform="rotate(-15 26 14.75)"/>
+      </svg>
       <div id="conn-dot" style="position:absolute;bottom:1px;right:1px;width:9px;height:9px;background:var(--ok);border-radius:50%;border:2px solid var(--surface);transition:background .3s"></div>
     </div>
     <div class="sb-text"><strong>Kiki Jr</strong><span>Co-piloto IA · Agencia</span></div>
@@ -225,6 +274,10 @@
     <div class="nav-item" data-page="calendario">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Calendario
     </div>
+    <div class="nav-item" data-page="notas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Notas
+      <span class="nb" id="notas-badge" style="display:none">0</span>
+    </div>
     <div class="nav-item" data-page="archivos">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Archivos
     </div>
@@ -242,7 +295,7 @@
   <!-- CHAT -->
   <div id="page-chat" class="page active">
     <div class="chat-header">
-      <div class="chat-avatar">🤖</div>
+      <div class="chat-avatar" style="font-size:13px;font-weight:800;letter-spacing:-0.5px">KJ</div>
       <div class="chat-hdr-info"><strong>Kiki Jr</strong><span>● Online — Co-piloto IA</span></div>
     </div>
     <div class="chat-messages" id="chat-messages"></div>
@@ -372,6 +425,63 @@
         <span class="cal-event ev-seguimiento" style="display:inline-block">● Seguimiento</span>
         <span class="cal-event ev-llamada" style="display:inline-block">● Llamada</span>
         <span class="cal-event ev-idea" style="display:inline-block">● Idea</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTAS -->
+  <div id="page-notas" class="page">
+    <div class="sec-hdr" style="padding-bottom:12px">
+      <div><div class="sec-title">Notas</div><div class="sec-sub" id="notas-sub">Tus notas personales</div></div>
+      <div class="sec-acts">
+        <button class="btn btn-g btn-sm" onclick="loadNotas()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>Sincronizar
+        </button>
+        <button class="btn btn-p btn-sm" onclick="createNewNote()">+ Nueva nota</button>
+      </div>
+    </div>
+    <div class="content" style="padding:0 26px 0 0;overflow:hidden">
+      <div class="notes-container">
+        <div class="notes-sidebar">
+          <div class="notes-search">
+            <input type="text" id="notes-search-input" placeholder="Buscar notas..." oninput="filterNotas(this.value)">
+          </div>
+          <div class="notes-list" id="notes-list">
+            <div class="empty" style="padding:30px 14px"><div class="eicon">📝</div><p>Sin notas aún</p></div>
+          </div>
+        </div>
+        <div class="notes-editor" id="notes-editor">
+          <div class="note-empty-state" id="note-empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p style="font-size:14px">Selecciona una nota o crea una nueva</p>
+          </div>
+          <div id="note-editor-active" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+            <div class="note-editor-toolbar">
+              <button class="note-toolbar-btn" onclick="noteFormat('bold')" title="Negrita"><b>B</b></button>
+              <button class="note-toolbar-btn" onclick="noteFormat('italic')" title="Cursiva"><i>I</i></button>
+              <button class="note-toolbar-btn" onclick="noteFormat('underline')" title="Subrayado"><u>U</u></button>
+              <div class="note-toolbar-sep"></div>
+              <button class="note-toolbar-btn" onclick="noteFormat('list')" title="Lista">☰</button>
+              <button class="note-toolbar-btn" onclick="noteFormat('check')" title="Checklist">☑</button>
+              <div class="note-toolbar-sep"></div>
+              <select class="note-cat-select" id="note-cat" onchange="updateNoteCategory()">
+                <option value="general">General</option>
+                <option value="negocio">Negocio</option>
+                <option value="cliente">Cliente</option>
+                <option value="idea">Idea</option>
+                <option value="personal">Personal</option>
+                <option value="fiscal">Fiscal</option>
+                <option value="tecnico">Técnico</option>
+              </select>
+              <div style="flex:1"></div>
+              <button class="note-toolbar-btn" onclick="pinNote()" id="note-pin-btn" title="Fijar nota">📌</button>
+              <button class="note-toolbar-btn" onclick="deleteCurrentNote()" title="Eliminar" style="color:var(--danger)">🗑</button>
+            </div>
+            <input type="text" class="note-title-input" id="note-title" placeholder="Título de la nota..." oninput="autoSaveNote()">
+            <textarea class="note-body-input" id="note-body" placeholder="Empieza a escribir..." oninput="autoSaveNote()"></textarea>
+            <div class="note-status" id="note-status"><span class="pending">●</span> Sin guardar</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -569,9 +679,10 @@ const SL={1:'Sin oportunidad',2:'Buscando comunicación',3:'Haciendo proyecto',4
 const SC={1:'#475569',2:'#60a5fa',3:'#fbbf24',4:'#34d399',5:'#f87171'};
 const SB={1:'s1',2:'s2b',3:'s3b',4:'s4',5:'s5'};
 
-let clients=[],productos=[],archivos=[],calEvents=[],ideas=[];
+let clients=[],productos=[],archivos=[],calEvents=[],ideas=[],notas=[];
 let calView='month',calDate=new Date(),chatHistory=[],curClientFilter='all';
 let _editClientId=null,_editIdeaId=null,_editIdeaRowNum=null,_editProdId=null,_editProdRowNum=null,_editEvId=null,_editEvRowNum=null;
+let _activeNoteId=null,_noteSaveTimer=null,_notasFiltered=null;
 let cfg={webhook:''};
 
 function getBase(){return cfg.webhook||localStorage.getItem('BASE_URL')||'';}
@@ -602,6 +713,7 @@ function navigate(page){
   if(page==='productos')loadProductos();
   if(page==='ideas')loadIdeas();
   if(page==='calendario')renderCalendar();
+  if(page==='notas')loadNotas();
   if(page==='archivos')loadArchivos();
 }
 document.querySelectorAll('.nav-item[data-page]').forEach(el=>{
@@ -637,7 +749,7 @@ function sendMsg(){
 function appendMsg(role,text){
   const c=document.getElementById('chat-messages');
   const d=document.createElement('div');d.className='msg '+role;
-  const av=document.createElement('div');av.className='msg-avatar';av.textContent=role==='bot'?'🤖':'👤';
+  const av=document.createElement('div');av.className='msg-avatar';if(role==='bot'){av.textContent='KJ';av.style.cssText='font-size:10px;font-weight:800;letter-spacing:-0.5px';}else av.textContent='👤';
   const b=document.createElement('div');b.className='msg-bubble';b.innerHTML=String(text).replace(/\n/g,'<br>');
   d.appendChild(av);d.appendChild(b);c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
@@ -645,7 +757,7 @@ function appendBotMsg(t){appendMsg('bot',t);}
 function showTyping(){
   const c=document.getElementById('chat-messages');
   const d=document.createElement('div');d.className='typing-indicator';d.id='typing-ind';
-  const av=document.createElement('div');av.className='msg-avatar';av.textContent='🤖';
+  const av=document.createElement('div');av.className='msg-avatar';av.textContent='KJ';av.style.cssText='font-size:10px;font-weight:800;letter-spacing:-0.5px';
   const dots=document.createElement('div');dots.className='typing-dots';dots.innerHTML='<span></span><span></span><span></span>';
   d.appendChild(av);d.appendChild(dots);c.appendChild(d);c.scrollTop=c.scrollHeight;
 }
@@ -1116,6 +1228,191 @@ async function deleteArchivo(id,rowNum){
   }catch(e){toast('Error: '+e.message,'err');}
 }
 
+/* ─── NOTAS (Apple Notes style + Google Sheets sync) ─── */
+async function loadNotas(){
+  try{
+    const r=await api('/obtener-notas');const d=await r.json();
+    notas=Array.isArray(d)?d:(d.notas||[]);
+    // Merge with local unsaved
+    const local=JSON.parse(localStorage.getItem('notas_local')||'[]');
+    local.forEach(ln=>{if(!notas.find(n=>n.id===ln.id))notas.push(ln);});
+  }catch{
+    // Fallback to local
+    notas=JSON.parse(localStorage.getItem('notas_local')||'[]');
+  }
+  renderNotasList();
+  updateNotasBadge();
+}
+
+function renderNotasList(filter=''){
+  const el=document.getElementById('notes-list');
+  const search=filter.toLowerCase();
+  let filtered=notas.filter(n=>{
+    if(!search)return true;
+    return (n.titulo||'').toLowerCase().includes(search)||(n.contenido||'').toLowerCase().includes(search)||(n.categoria||'').toLowerCase().includes(search);
+  });
+  // Sort: pinned first, then by date
+  filtered.sort((a,b)=>{
+    if(a.pinned&&!b.pinned)return -1;if(!a.pinned&&b.pinned)return 1;
+    return new Date(b.fecha_mod||b.fecha||0)-new Date(a.fecha_mod||a.fecha||0);
+  });
+  _notasFiltered=filtered;
+  document.getElementById('notas-sub').textContent=`${notas.length} nota${notas.length!==1?'s':''}`;
+  if(!filtered.length){
+    el.innerHTML=search?'<div class="empty" style="padding:20px"><p style="font-size:12px">Sin resultados</p></div>':'<div class="empty" style="padding:30px 14px"><div class="eicon">📝</div><p>Sin notas aún</p></div>';
+    return;
+  }
+  el.innerHTML=filtered.map(n=>{
+    const isActive=_activeNoteId===n.id;
+    const preview=(n.contenido||'').replace(/\n/g,' ').slice(0,60);
+    const catColors={negocio:'#ef4444',cliente:'#3b82f6',idea:'#f59e0b',personal:'#a855f7',fiscal:'#22c55e',tecnico:'#06b6d4',general:'#6b7280'};
+    const catColor=catColors[n.categoria]||catColors.general;
+    return `<div class="note-item${isActive?' active':''}" onclick="openNote('${n.id}')" style="border-left-color:${isActive?catColor:'transparent'}">
+      <div style="display:flex;align-items:center;gap:4px">
+        <div class="note-item-title">${n.titulo||'Sin título'}</div>
+        ${n.pinned?'<span class="note-item-pin">📌</span>':''}
+      </div>
+      <div class="note-item-preview">${preview||'Nota vacía'}</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+        <span style="width:6px;height:6px;border-radius:50%;background:${catColor};flex-shrink:0"></span>
+        <span class="note-item-date">${n.categoria||'general'} · ${fmtDate(n.fecha_mod||n.fecha)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterNotas(q){renderNotasList(q);}
+
+function createNewNote(){
+  const id=Date.now().toString();
+  const nota={id,titulo:'',contenido:'',categoria:'general',fecha:today(),fecha_mod:today(),pinned:false,synced:false};
+  notas.unshift(nota);
+  saveNotasLocal();
+  renderNotasList();
+  openNote(id);
+}
+
+function openNote(id){
+  const n=notas.find(x=>x.id===id);
+  if(!n)return;
+  _activeNoteId=id;
+  document.getElementById('note-empty-state').style.display='none';
+  const editor=document.getElementById('note-editor-active');
+  editor.style.display='flex';
+  document.getElementById('note-title').value=n.titulo||'';
+  document.getElementById('note-body').value=n.contenido||'';
+  document.getElementById('note-cat').value=n.categoria||'general';
+  document.getElementById('note-pin-btn').style.opacity=n.pinned?'1':'.4';
+  updateNoteStatus(n.synced);
+  renderNotasList(document.getElementById('notes-search-input').value);
+}
+
+function autoSaveNote(){
+  if(!_activeNoteId)return;
+  const n=notas.find(x=>x.id===_activeNoteId);
+  if(!n)return;
+  n.titulo=document.getElementById('note-title').value;
+  n.contenido=document.getElementById('note-body').value;
+  n.fecha_mod=today();
+  n.synced=false;
+  updateNoteStatus(false);
+  saveNotasLocal();
+  // Debounce sync to Sheets
+  clearTimeout(_noteSaveTimer);
+  _noteSaveTimer=setTimeout(()=>syncNoteToSheets(n),2000);
+  // Update sidebar preview
+  renderNotasList(document.getElementById('notes-search-input').value);
+}
+
+function updateNoteCategory(){
+  if(!_activeNoteId)return;
+  const n=notas.find(x=>x.id===_activeNoteId);
+  if(!n)return;
+  n.categoria=document.getElementById('note-cat').value;
+  n.fecha_mod=today();
+  n.synced=false;
+  saveNotasLocal();
+  syncNoteToSheets(n);
+  renderNotasList(document.getElementById('notes-search-input').value);
+}
+
+function pinNote(){
+  if(!_activeNoteId)return;
+  const n=notas.find(x=>x.id===_activeNoteId);
+  if(!n)return;
+  n.pinned=!n.pinned;
+  document.getElementById('note-pin-btn').style.opacity=n.pinned?'1':'.4';
+  saveNotasLocal();
+  syncNoteToSheets(n);
+  renderNotasList(document.getElementById('notes-search-input').value);
+  toast(n.pinned?'Nota fijada':'Nota desfijada','ok');
+}
+
+function deleteCurrentNote(){
+  if(!_activeNoteId)return;
+  const n=notas.find(x=>x.id===_activeNoteId);
+  if(!confirm(`¿Eliminar "${n?.titulo||'esta nota'}"?`))return;
+  // Try to delete from Sheets
+  apiPost('/eliminar-nota',{id:_activeNoteId,row_number:n?.row_number}).catch(()=>{});
+  notas=notas.filter(x=>x.id!==_activeNoteId);
+  _activeNoteId=null;
+  saveNotasLocal();
+  document.getElementById('note-editor-active').style.display='none';
+  document.getElementById('note-empty-state').style.display='flex';
+  renderNotasList();
+  updateNotasBadge();
+  toast('Nota eliminada','ok');
+}
+
+function noteFormat(type){
+  const body=document.getElementById('note-body');
+  const start=body.selectionStart,end=body.selectionEnd;
+  const text=body.value;
+  const selected=text.substring(start,end);
+  let replacement='';
+  if(type==='bold')replacement=`**${selected||'texto'}**`;
+  else if(type==='italic')replacement=`_${selected||'texto'}_`;
+  else if(type==='underline')replacement=`__${selected||'texto'}__`;
+  else if(type==='list')replacement=`\n- ${selected||'elemento'}`;
+  else if(type==='check')replacement=`\n☐ ${selected||'tarea'}`;
+  body.value=text.substring(0,start)+replacement+text.substring(end);
+  body.focus();
+  autoSaveNote();
+}
+
+async function syncNoteToSheets(n){
+  try{
+    const data={id:n.id,titulo:n.titulo||'Sin título',contenido:n.contenido||'',categoria:n.categoria||'general',fecha:n.fecha,fecha_mod:n.fecha_mod||today(),pinned:n.pinned?'TRUE':'FALSE'};
+    if(n.row_number){
+      await apiPost('/actualizar-nota',{...data,row_number:n.row_number});
+    }else{
+      const r=await apiPost('/guardar-nota',data);
+      const resp=await r.json();
+      if(resp.row_number)n.row_number=resp.row_number;
+    }
+    n.synced=true;
+    if(_activeNoteId===n.id)updateNoteStatus(true);
+    saveNotasLocal();
+  }catch{
+    // Keep local, will sync later
+  }
+}
+
+function updateNoteStatus(synced){
+  const el=document.getElementById('note-status');
+  if(synced)el.innerHTML='<span class="synced">●</span> Guardado en Sheets';
+  else el.innerHTML='<span class="pending">●</span> Guardando...';
+}
+
+function saveNotasLocal(){localStorage.setItem('notas_local',JSON.stringify(notas));}
+
+function updateNotasBadge(){
+  const unsaved=notas.filter(n=>!n.synced).length;
+  const badge=document.getElementById('notas-badge');
+  if(unsaved>0){badge.textContent=unsaved;badge.style.display='';}
+  else badge.style.display='none';
+}
+
 /* ─── CONFIG ─── */
 function saveConfig(){cfg.webhook=document.getElementById('cfg-webhook').value;localStorage.setItem('BASE_URL',cfg.webhook);}
 function savePerfil(){localStorage.setItem('perfil_kiki',JSON.stringify({formato:document.getElementById('pref-formato').value,horas:document.getElementById('pref-horas').value,zonas:document.getElementById('pref-zonas').value,servicio:document.getElementById('pref-servicio').value,notas:document.getElementById('pref-notas').value}));}
@@ -1165,6 +1462,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
 /* ─── INIT ─── */
 (function init(){
   loadConfig();
+  notas=JSON.parse(localStorage.getItem('notas_local')||'[]');
   appendMsg('bot','Buenos días Kiki. Soy Kiki Jr, tu co-piloto.\n¿En qué te ayudo hoy?');
   renderCalendar();
   if(!navigator.onLine)setConnDot(false);
