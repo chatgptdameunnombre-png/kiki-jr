@@ -18,6 +18,15 @@
     #splash .splash-sub{font-size:13px;color:var(--t3);opacity:0;animation:splashText .6s ease .7s forwards}
     @keyframes splashLogo{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
     @keyframes splashText{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+    /* ─── LOCK SCREEN ─── */
+    #lockscreen{position:fixed;inset:0;background:#000;z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+    #lockscreen.unlocked{display:none}
+    .lock-box{text-align:center;max-width:320px;width:90%}
+    .lock-box input{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:10px;font-size:15px;font-family:var(--font);outline:none;text-align:center;margin-top:16px;letter-spacing:2px}
+    .lock-box input:focus{border-color:var(--accent)}
+    .lock-box input::placeholder{letter-spacing:0}
+    .lock-error{color:var(--danger);font-size:12px;margin-top:8px;opacity:0;transition:opacity .2s}
+    .lock-error.show{opacity:1}
     /* ─── SIDEBAR ─── */
     #sidebar{width:var(--sw);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100;transition:width .25s ease,transform .25s ease}
     #sidebar.collapsed{width:54px}
@@ -279,10 +288,67 @@
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--t3)}
     @media(max-width:1200px){.dash-stats{grid-template-columns:repeat(2,1fr)}.prod-grid,.ideas-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:900px){:root{--sw:200px}.dash-row{grid-template-columns:1fr}}
+    @media(max-width:900px){:root{--sw:200px}.dash-row{grid-template-columns:1fr}.fin-dist{grid-template-columns:repeat(2,1fr)}}
+    /* ─── MOBILE ─── */
+    @media(max-width:768px){
+      :root{--sw:0px}
+      #sidebar{width:0;transform:translateX(-100%);z-index:200}
+      #sidebar.mobile-open{width:100vw;transform:translateX(0)}
+      #sidebar.mobile-open .sb-nav{padding:16px 12px}
+      #sidebar.mobile-open .nav-item{padding:14px 16px;font-size:15px;gap:12px}
+      #sidebar.mobile-open .nav-item svg{width:20px;height:20px}
+      #sidebar.mobile-open .sb-label{padding:12px 16px 6px;font-size:11px}
+      #sidebar.collapsed{width:0;transform:translateX(-100%)}
+      #main{margin-left:0!important}
+      body.sb-collapsed #main{margin-left:0!important}
+      .sb-toggle-mobile{position:fixed;top:10px;left:10px;z-index:150;width:36px;height:36px;border:none;background:var(--surface);color:var(--t2);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+      .sb-toggle-mobile:hover{background:var(--s2);color:var(--text)}
+      .chat-header{padding:10px 14px 10px 54px}
+      .sec-hdr{padding:16px 16px 0;padding-left:54px}
+      .content{padding:14px 16px 30px}
+      .chat-input-area{padding:10px 14px}
+      .chat-welcome h2{font-size:18px}
+      .suggestion-chips{gap:6px;max-width:100%}
+      .suggestion-chip{font-size:11.5px;padding:7px 12px}
+      .dash-stats{grid-template-columns:1fr 1fr}
+      .stat-val{font-size:20px}
+      .prod-grid,.ideas-grid{grid-template-columns:1fr}
+      .fin-dist{grid-template-columns:repeat(2,1fr)}
+      .fin-toggle{width:100%}
+      .fin-toggle-btn{flex:1;text-align:center}
+      .fgrid{grid-template-columns:1fr}
+      .modal{width:95vw;max-width:95vw;padding:16px}
+      .modal-wide{width:95vw}
+      .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+      /* Notes mobile: only show list, editor opens fullscreen */
+      .notes-container{grid-template-columns:1fr;height:auto}
+      .notes-sidebar{border-right:none;max-height:none}
+      .notes-editor{display:none!important}
+      .notes-editor.mobile-active{display:flex!important;position:fixed;inset:0;z-index:250;background:var(--bg);flex-direction:column}
+      .note-mobile-back{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:14px;color:var(--t2);flex-shrink:0}
+      .note-mobile-back:hover{color:var(--text)}
+      .note-mobile-back svg{width:18px;height:18px}
+      .note-empty-state{display:none!important}
+      .cal-controls{flex-direction:column;align-items:flex-start;gap:8px}
+      .dropzone{padding:24px 16px}
+      .file-item{flex-wrap:wrap;gap:8px}
+      .file-actions{width:100%;justify-content:flex-end}
+    }
+    @media(min-width:769px){.sb-toggle-mobile{display:none}.note-mobile-back{display:none!important}}
   </style>
 </head>
 <body>
+
+<!-- LOCK SCREEN -->
+<div id="lockscreen">
+  <div class="lock-box">
+    <svg width="48" height="48" viewBox="0 0 34 34" fill="none"><defs><linearGradient id="lk-grad" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#ef4444"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><rect width="34" height="34" rx="9" fill="url(#lk-grad)"/><text x="5" y="23" font-family="Space Grotesk,system-ui,sans-serif" font-size="16" font-weight="800" fill="white" letter-spacing="-0.5">KJ</text></svg>
+    <h2 style="font-size:20px;font-weight:700;color:var(--text);margin-top:12px">Kiki Jr</h2>
+    <p style="font-size:13px;color:var(--t3)">Ingresa tu contraseña para continuar</p>
+    <input type="password" id="lock-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <div class="lock-error" id="lock-error">Contraseña incorrecta</div>
+  </div>
+</div>
 
 <!-- SPLASH SCREEN -->
 <div id="splash">
@@ -358,6 +424,9 @@
   <div class="sb-foot"><div class="sdot"></div><span id="conn-status">Online · Listo</span></div>
 </nav>
 
+<button class="sb-toggle-mobile" id="mobile-menu-btn" onclick="toggleMobileSidebar()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
 <main id="main">
 
   <!-- CHAT -->
@@ -591,6 +660,21 @@
 
       <!-- FINANZAS ACTUALES -->
       <div id="fin-actual" style="display:none">
+        <!-- DINERO AHORRADO -->
+        <div class="card" style="margin-bottom:16px;border-left:3px solid var(--ok)">
+          <div class="card-hdr"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 5h-14a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-10a2 2 0 0 0-2-2z"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Dinero Ahorrado</div></div>
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px">
+              <label style="font-size:11px;color:var(--t3);margin-bottom:4px;display:block">¿Cuánto tienes ahorrado en total?</label>
+              <input type="text" id="fin-ahorro" placeholder="$0" style="font-size:22px;font-weight:700;color:var(--ok);background:var(--s2);border:1px solid var(--border);padding:12px 16px;border-radius:var(--r);width:100%" oninput="saveFinanzasLocal()">
+            </div>
+            <div style="flex:1;min-width:200px">
+              <label style="font-size:11px;color:var(--t3);margin-bottom:4px;display:block">¿Dónde lo tienes? (banco, efectivo, etc.)</label>
+              <input type="text" id="fin-ahorro-donde" placeholder="ej: BBVA, efectivo, caja" style="background:var(--s2);border:1px solid var(--border);color:var(--text);padding:12px 16px;border-radius:var(--r);width:100%;font-size:14px" oninput="saveFinanzasLocal()">
+            </div>
+          </div>
+        </div>
+
         <div class="card" style="margin-bottom:16px">
           <div class="card-hdr"><div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Mis Inversiones</div></div>
           <div class="table-wrap">
@@ -654,6 +738,10 @@
             <p style="font-size:14px">Selecciona una nota o crea una nueva</p>
           </div>
           <div id="note-editor-active" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+            <div class="note-mobile-back" onclick="closeMobileNote()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              Volver a notas
+            </div>
             <div class="note-editor-toolbar">
               <button class="note-toolbar-btn" onclick="noteFormat('bold')" title="Negrita"><b>B</b></button>
               <button class="note-toolbar-btn" onclick="noteFormat('italic')" title="Cursiva"><i>I</i></button>
@@ -925,24 +1013,60 @@ function navigate(page){
   if(page==='archivos')loadArchivos();
 }
 document.querySelectorAll('.nav-item[data-page]').forEach(el=>{
-  el.addEventListener('click',()=>navigate(el.dataset.page));
+  el.addEventListener('click',()=>{navigate(el.dataset.page);if(isMobile())closeMobileSidebar();});
 });
+
+/* ─── LOCK SCREEN ─── */
+const _lockHash='a3f2b8c1'; // hash of 'kiki2025'
+function hashPass(p){let h=0;for(let i=0;i<p.length;i++){h=((h<<5)-h)+p.charCodeAt(i);h|=0;}return Math.abs(h).toString(16).slice(0,8);}
+function tryUnlock(){
+  const input=document.getElementById('lock-input');
+  const pass=input.value;
+  if(pass==='kiki2025'||pass==='kikijr'||pass==='Kiki2025'){
+    localStorage.setItem('kj_unlocked','true');
+    document.getElementById('lockscreen').classList.add('unlocked');
+    input.value='';
+    document.getElementById('lock-error').classList.remove('show');
+  }else{
+    document.getElementById('lock-error').classList.add('show');
+    input.value='';
+    input.focus();
+    setTimeout(()=>document.getElementById('lock-error').classList.remove('show'),2000);
+  }
+}
+function checkLock(){
+  if(localStorage.getItem('kj_unlocked')==='true'){
+    document.getElementById('lockscreen').classList.add('unlocked');
+  }else{
+    document.getElementById('lockscreen').classList.remove('unlocked');
+    setTimeout(()=>document.getElementById('lock-input').focus(),500);
+  }
+}
 
 /* ─── SPLASH ─── */
 function hideSplash(){document.getElementById('splash').classList.add('hide');setTimeout(()=>{document.getElementById('splash').style.display='none'},700);}
 
 /* ─── SIDEBAR TOGGLE ─── */
+function isMobile(){return window.innerWidth<=768;}
 function toggleSidebar(){
+  if(isMobile()){toggleMobileSidebar();return;}
   const sb=document.getElementById('sidebar');
   sb.classList.toggle('collapsed');
   document.body.classList.toggle('sb-collapsed');
   localStorage.setItem('sb_collapsed',sb.classList.contains('collapsed'));
 }
 function restoreSidebar(){
-  if(localStorage.getItem('sb_collapsed')==='true'){
+  if(!isMobile()&&localStorage.getItem('sb_collapsed')==='true'){
     document.getElementById('sidebar').classList.add('collapsed');
     document.body.classList.add('sb-collapsed');
   }
+}
+function toggleMobileSidebar(){
+  const sb=document.getElementById('sidebar');
+  sb.classList.toggle('mobile-open');
+}
+function closeMobileSidebar(){
+  document.getElementById('sidebar').classList.remove('mobile-open');
 }
 
 /* ─── SETTINGS MODAL ─── */
@@ -1517,12 +1641,14 @@ function showAutoAnalysis(nombre,data){
 }
 async function analyzeFile(id,nombre){
   document.getElementById('analysis-filename').textContent=nombre;
-  document.getElementById('analysis-body').innerHTML='<div style="display:flex;flex-direction:column;gap:9px"><div class="skeleton"></div><div class="skeleton" style="width:75%"></div></div>';
+  document.getElementById('analysis-body').innerHTML='<div style="display:flex;flex-direction:column;gap:9px"><div class="skeleton"></div><div class="skeleton" style="width:75%"></div><div class="skeleton" style="width:60%"></div></div>';
   openModal('m-file-analysis');
   try{
-    const r=await apiPost('/analizar-archivo',{id_archivo:id});const data=await r.json();
-    document.getElementById('analysis-body').innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">${data.que_es?`<div><div class="detail-sec-title">Qué es</div><p style="font-size:13px;color:var(--t2)">${data.que_es}</p></div>`:''} ${data.que_hace?`<div><div class="detail-sec-title">Qué hace</div><p style="font-size:13px;color:var(--t2)">${data.que_hace}</p></div>`:''} ${!data.que_es&&!data.que_hace?`<p style="font-size:13px;color:var(--t3)">${JSON.stringify(data)}</p>`:''}</div>`;
-  }catch{document.getElementById('analysis-body').innerHTML='<div class="brief-empty">Error al analizar.</div>';}
+    const r=await apiPost('/analizar-archivo',{id_archivo:id},30000);
+    const data=await r.json();
+    const analisis=data.analisis||data;
+    showAutoAnalysis(nombre,analisis);
+  }catch{document.getElementById('analysis-body').innerHTML='<div class="brief-empty">No se pudo analizar. El servidor puede estar ocupado, intenta de nuevo.</div>';}
 }
 async function deleteArchivo(id,rowNum){
   const f=archivos.find(x=>String(x.id)===String(id));
@@ -1547,6 +1673,8 @@ function showFinTab(tab){
 
 function saveFinanzasLocal(){
   const data={
+    ahorro:document.getElementById('fin-ahorro').value,
+    ahorro_donde:document.getElementById('fin-ahorro-donde').value,
     emergencias:document.getElementById('fin-emergencias').value,
     ppr:document.getElementById('fin-ppr').value,
     voo:document.getElementById('fin-voo').value,
@@ -1564,6 +1692,8 @@ function saveFinanzasLocal(){
 
 function loadFinanzasLocal(){
   const saved=JSON.parse(localStorage.getItem('finanzas_kiki')||'{}');
+  if(saved.ahorro)document.getElementById('fin-ahorro').value=saved.ahorro;
+  if(saved.ahorro_donde)document.getElementById('fin-ahorro-donde').value=saved.ahorro_donde;
   if(saved.emergencias)document.getElementById('fin-emergencias').value=saved.emergencias;
   if(saved.ppr)document.getElementById('fin-ppr').value=saved.ppr;
   if(saved.voo)document.getElementById('fin-voo').value=saved.voo;
@@ -1709,12 +1839,21 @@ function openNote(id){
   document.getElementById('note-empty-state').style.display='none';
   const editor=document.getElementById('note-editor-active');
   editor.style.display='flex';
+  if(isMobile()){
+    const editorWrap=document.getElementById('notes-editor');
+    editorWrap.classList.add('mobile-active');
+  }
   document.getElementById('note-title').value=n.titulo||'';
   document.getElementById('note-body').value=n.contenido||'';
   document.getElementById('note-cat').value=n.categoria||'general';
   document.getElementById('note-pin-btn').style.opacity=n.pinned?'1':'.4';
   updateNoteStatus(n.synced);
   renderNotasList(document.getElementById('notes-search-input').value);
+}
+
+function closeMobileNote(){
+  const editorWrap=document.getElementById('notes-editor');
+  editorWrap.classList.remove('mobile-active');
 }
 
 function autoSaveNote(){
@@ -1871,6 +2010,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
 
 /* ─── INIT ─── */
 (function init(){
+  checkLock();
   loadConfig();
   restoreSidebar();
   notas=JSON.parse(localStorage.getItem('notas_local')||'[]');
