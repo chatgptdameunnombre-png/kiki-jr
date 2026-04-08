@@ -1144,9 +1144,14 @@ function sendMsg(){
   const base=getBase();
   if(!base){setTimeout(()=>{hideTyping();appendBotMsg('Necesito la URL de n8n para funcionar. Haz clic en el logo de Kiki Jr para abrir Configuración y pegar la URL.');},800);return;}
   apiPost('/kiki-chat',{mensaje:text,historial:chatHistory.slice(-10),perfil_kiki:getPerfil()})
-    .then(r=>r.json()).then(data=>{
+    .then(r=>{
+      const ct=r.headers.get('content-length');
+      if(ct==='0'||!ct)return {respuesta:'El servidor de IA está ocupado. Intenta de nuevo en unos segundos.'};
+      return r.json().catch(()=>({respuesta:'Error al procesar la respuesta.'}));
+    }).then(data=>{
+      if(!data)data={respuesta:'Sin respuesta del servidor.'};
       hideTyping();
-      const resp=data.respuesta||data.message||data.text||data.output||JSON.stringify(data);
+      const resp=data.respuesta||data.message||data.text||data.output||'Sin respuesta. El servidor puede estar ocupado.';
       chatHistory.push({role:'assistant',content:resp});
       appendBotMsg(resp);
       if(data.accion_ejecutada){
