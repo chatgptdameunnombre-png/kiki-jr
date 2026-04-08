@@ -1433,13 +1433,21 @@ function renderFileList(){
   const el=document.getElementById('files-list');
   if(!archivos.length){el.innerHTML='<div class="empty"><div class="eicon">📂</div><p>Sin archivos. Arrastra uno aquí.</p></div>';return;}
   const icons={json:'⚙️',md:'📝',txt:'📄',pdf:'📋'};
+  const statusLabels={uploading:'📤 Subiendo...',analyzing:'🧠 Analizando...',done:'✅ Analizado',uploaded:'📁 Subido',error:'❌ Error',local:'💾 Local'};
   el.innerHTML=archivos.map(f=>{
     const ext=(f.nombre||'').split('.').pop().toLowerCase();
-    return `<div class="file-item">
+    const st=f.status||'done';
+    const statusHtml=st==='uploading'||st==='analyzing'?`<span style="font-size:11px;color:var(--warn)">${statusLabels[st]}</span>`:'';
+    const analyzeId=f.id_drive||f.id;
+    const hasAnalysis=f.analisis&&(f.analisis.que_es||f.analisis.resumen);
+    return `<div class="file-item" ${hasAnalysis?'style="border-left:3px solid var(--ok)"':''}>
       <div class="file-icon">${icons[ext]||'📎'}</div>
-      <div class="file-info"><div class="file-name">${f.nombre||'Sin nombre'}</div><div class="file-meta">${f.tipo||ext} · ${fmtDate(f.fecha)} · ${f.cliente_asociado||f.clienteAsociado||'Sin cliente'}</div></div>
+      <div class="file-info">
+        <div class="file-name">${f.nombre||'Sin nombre'} ${statusHtml}</div>
+        <div class="file-meta">${f.tipo||ext} · ${fmtDate(f.fecha)}${f.analisis?.que_es?' · '+f.analisis.que_es.slice(0,40):''}</div>
+      </div>
       <div class="file-actions">
-        <button class="btn btn-g btn-sm" onclick="analyzeFile('${f.id}','${(f.nombre||'').replace(/'/g,"\\'")}')">Analizar</button>
+        ${hasAnalysis?`<button class="btn btn-ok btn-sm" onclick="showAutoAnalysis('${(f.nombre||'').replace(/'/g,"\\'")}',${JSON.stringify(f.analisis).replace(/'/g,"\\'")})">Ver análisis</button>`:`<button class="btn btn-g btn-sm" onclick="analyzeFile('${analyzeId}','${(f.nombre||'').replace(/'/g,"\\'")}')">Analizar</button>`}
         <button class="btn btn-danger btn-sm" onclick="deleteArchivo('${f.id}',${f.row_number})">🗑</button>
       </div>
     </div>`;
@@ -1449,41 +1457,62 @@ function handleDrop(e){e.preventDefault();document.getElementById('dropzone').cl
 function handleFiles(files){Array.from(files).forEach(file=>{const ext=file.name.split('.').pop().toLowerCase();if(!['json','md','txt','pdf'].includes(ext)){toast(`Tipo no soportado: .${ext}`,'err');return;}const reader=new FileReader();reader.onload=ev=>uploadFile(file.name,ext,ev.target.result);reader.readAsDataURL(file);});}
 async function uploadFile(nombre,tipo,base64){
   const id=Date.now().toString();
-  const obj={id,nombre,tipo,fecha:today(),cliente_asociado:'',analisis:null};
+  const obj={id,nombre,tipo,fecha:today(),cliente_asociado:'',analisis:null,status:'uploading'};
   archivos.push(obj);renderFileList();
-  toast(`Subiendo ${nombre}...`,'info');
+  toast(`📤 Subiendo ${nombre}...`,'info');
   try{
     const r=await apiPost('/subir-archivo',{archivo_base64:base64,nombre,tipo,cliente_asociado:''});
     const resp=await r.json();
-    if(resp.success)obj.id_drive=resp.id;
-    toast(`${nombre} subido. Analizando...`,'info');
-    // Auto-analyze with AI
-    setTimeout(async()=>{
+    if(resp.success){
+      obj.id_drive=resp.id;
+      obj.status='analyzing';
+      renderFileList();
+      toast(`✅ ${nombre} subido. Analizando con IA...`,'ok');
+      // Auto-analyze
       try{
-        const ar=await apiPost('/analizar-archivo',{id_archivo:obj.id_drive||id});
+        const ar=await apiPost('/analizar-archivo',{id_archivo:obj.id_drive});
         const data=await ar.json();
-        obj.analisis=data;
+        obj.analisis=data.analisis||data;
+        obj.status='done';
         renderFileList();
-        toast(`${nombre} analizado`,'ok');
-        // Show analysis automatically
-        showAutoAnalysis(nombre,data);
-      }catch{
-        toast(`${nombre} subido pero no se pudo analizar`,'info');
+        toast(`🧠 ${nombre} analizado`,'ok');
+        showAutoAnalysis(nombre,obj.analisis);
+      }catch(e){
+        obj.status='uploaded';
+        renderFileList();
+        toast(`${nombre} subido pero el análisis falló. Puedes intentar después con el botón "Analizar".`,'info');
       }
-    },2000);
-  }catch{toast(`${nombre} guardado localmente`,'info');}
+    }else{
+      obj.status='error';
+      renderFileList();
+      toast(`Error al subir ${nombre}`,'err');
+    }
+  }catch(e){
+    obj.status='local';
+    renderFileList();
+    toast(`${nombre} guardado localmente (sin conexión a n8n)`,'info');
+  }
 }
 function showAutoAnalysis(nombre,data){
   document.getElementById('analysis-filename').textContent=nombre;
-  const que_es=data.que_es||data.analisis?.que_es||'';
-  const que_hace=data.que_hace||data.analisis?.que_hace||'';
-  const resumen=data.resumen||data.analisis?.resumen||'';
-  document.getElementById('analysis-body').innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">
-    ${que_es?`<div><div class="detail-sec-title">Qué es</div><p style="font-size:13px;color:var(--t2)">${que_es}</p></div>`:''}
-    ${que_hace?`<div><div class="detail-sec-title">Qué hace</div><p style="font-size:13px;color:var(--t2)">${que_hace}</p></div>`:''}
-    ${resumen?`<div><div class="detail-sec-title">Resumen</div><p style="font-size:13px;color:var(--t2)">${resumen}</p></div>`:''}
-    ${!que_es&&!que_hace&&!resumen?`<p style="font-size:13px;color:var(--t3)">Análisis: ${JSON.stringify(data)}</p>`:''}
-  </div>`;
+  const a=data||{};
+  const que_es=a.que_es||'';
+  const que_hace=a.que_hace||'';
+  const resumen=a.resumen||'';
+  const componentes=a.componentes||'';
+  const tipo_negocio=a.tipo_negocio||'';
+  let html='<div style="display:flex;flex-direction:column;gap:14px">';
+  if(que_es)html+=`<div><div class="detail-sec-title">📄 Qué es</div><p style="font-size:13.5px;color:var(--t2);line-height:1.6">${que_es}</p></div>`;
+  if(que_hace){
+    const hace=Array.isArray(que_hace)?'<ul style="margin:4px 0 0 16px;color:var(--t2);font-size:13px;line-height:1.7">'+que_hace.map(h=>'<li>'+h+'</li>').join('')+'</ul>':`<p style="font-size:13.5px;color:var(--t2);line-height:1.6">${que_hace}</p>`;
+    html+=`<div><div class="detail-sec-title">⚙️ Qué hace</div>${hace}</div>`;
+  }
+  if(resumen)html+=`<div><div class="detail-sec-title">📝 Resumen</div><p style="font-size:13.5px;color:var(--t2);line-height:1.6">${resumen}</p></div>`;
+  if(componentes)html+=`<div><div class="detail-sec-title">🔧 Componentes</div><p style="font-size:13px;color:var(--t2)">${componentes}</p></div>`;
+  if(tipo_negocio)html+=`<div><div class="detail-sec-title">🏪 Tipo de negocio</div><p style="font-size:13px;color:var(--t2)">${tipo_negocio}</p></div>`;
+  if(!que_es&&!que_hace&&!resumen)html+=`<p style="font-size:13px;color:var(--t3)">No se pudo extraer información del archivo. Puede estar vacío o en un formato no legible.</p>`;
+  html+='</div>';
+  document.getElementById('analysis-body').innerHTML=html;
   openModal('m-file-analysis');
 }
 async function analyzeFile(id,nombre){
