@@ -35,11 +35,10 @@
     .lock-error{color:var(--danger);font-size:12px;margin-top:10px;opacity:0;transition:opacity .2s;height:18px}
     .lock-error.show{opacity:1}
     .lock-hint{font-size:11px;color:var(--t3);margin-top:16px;opacity:0;animation:lockFade .5s ease 1.8s forwards}
-    /* Wave transition */
-    .lock-wave{position:fixed;inset:0;z-index:10001;pointer-events:none}
-    .lock-wave-bar{position:absolute;top:0;height:100%;background:linear-gradient(135deg,#ef4444,#f97316);transform:scaleX(0);transform-origin:left}
-    .lock-wave.active .lock-wave-bar{animation:waveSlide .7s cubic-bezier(.65,0,.35,1) forwards}
-    @keyframes waveSlide{0%{transform:scaleX(0)}45%{transform:scaleX(1)}55%{transform:scaleX(1)}100%{transform:scaleX(0);transform-origin:right}}
+    /* Fade reveal transition */
+    .lock-fade-overlay{position:fixed;inset:0;z-index:10001;background:#000;pointer-events:none;opacity:0;transition:opacity .4s ease}
+    .lock-fade-overlay.active{opacity:1}
+    .lock-fade-overlay.reveal{opacity:0;transition:opacity .8s ease}
     @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
     /* ─── SIDEBAR ─── */
     #sidebar{width:var(--sw);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:100;transition:width .25s ease,transform .25s ease}
@@ -368,8 +367,8 @@
     <p class="lock-hint">Presiona Enter para continuar</p>
   </div>
 </div>
-<!-- Wave transition overlay -->
-<div class="lock-wave" id="lock-wave"><div class="lock-wave-bar" style="width:100%"></div></div>
+<!-- Fade transition overlay -->
+<div class="lock-fade-overlay" id="lock-fade"></div>
 
 <!-- SPLASH SCREEN -->
 <div id="splash">
@@ -1049,24 +1048,28 @@ function tryUnlock(){
     input.disabled=true;
     document.getElementById('lock-error').classList.remove('show');
 
-    // 2. After 600ms, trigger the red wave
+    // 2. After 600ms, fade to black
     setTimeout(()=>{
-      document.getElementById('lock-wave').classList.add('active');
+      document.getElementById('lock-fade').classList.add('active');
     },600);
 
-    // 3. At wave midpoint (when screen is fully red), hide lockscreen
+    // 3. When fully black, remove lockscreen
     setTimeout(()=>{
-      document.getElementById('lockscreen').classList.add('unlocked');
       document.getElementById('lockscreen').style.display='none';
-    },950);
+    },1050);
 
-    // 4. Wave finishes revealing the app
+    // 4. Fade from black to reveal app
     setTimeout(()=>{
-      document.getElementById('lock-wave').style.display='none';
+      document.getElementById('lock-fade').classList.add('reveal');
+    },1100);
+
+    // 5. Cleanup
+    setTimeout(()=>{
+      document.getElementById('lock-fade').style.display='none';
       input.classList.remove('success');
       input.disabled=false;
       input.value='';
-    },1400);
+    },2000);
   }else{
     document.getElementById('lock-error').classList.add('show');
     input.value='';
