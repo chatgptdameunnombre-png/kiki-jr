@@ -893,15 +893,15 @@ function getPerfil(){try{return JSON.parse(localStorage.getItem('perfil_kiki')||
 function fmtDate(d){if(!d)return '—';try{return new Date(d+'T12:00:00').toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});}catch{return d;}}
 function today(){return new Date().toISOString().split('T')[0];}
 
-async function api(path,opts={}){
+async function api(path,opts={},timeout=20000){
   const base=getBase();
   if(!base)throw new Error('No URL configurada');
   const ctrl=new AbortController();
-  const tid=setTimeout(()=>ctrl.abort(),20000);
+  const tid=setTimeout(()=>ctrl.abort(),timeout);
   try{return await fetch(base+path,{...opts,signal:ctrl.signal});}finally{clearTimeout(tid);}
 }
-async function apiPost(path,data){
-  return api(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+async function apiPost(path,data,timeout=20000){
+  return api(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)},timeout);
 }
 
 /* ─── NAV ─── */
@@ -975,7 +975,7 @@ function sendMsg(){
   chatHistory.push({role:'user',content:text});
   showTyping();
   const base=getBase();
-  if(!base){setTimeout(()=>{hideTyping();appendBotMsg('Configura la URL base de n8n en Configuración para conectar el chatbot.');},800);return;}
+  if(!base){setTimeout(()=>{hideTyping();appendBotMsg('Necesito la URL de n8n para funcionar. Haz clic en el logo de Kiki Jr para abrir Configuración y pegar la URL.');},800);return;}
   apiPost('/kiki-chat',{mensaje:text,historial:chatHistory.slice(-10),perfil_kiki:getPerfil()})
     .then(r=>r.json()).then(data=>{
       hideTyping();
@@ -988,7 +988,7 @@ function sendMsg(){
         if(data.tipo_accion==='guardar_idea')loadIdeas();
         if(data.tipo_accion==='agregar_calendario')loadCalendar();
       }
-    }).catch(()=>{hideTyping();appendBotMsg('Kiki Jr no responde. Intenta en un momento.');setConnDot(false);});
+    }).catch(e=>{hideTyping();const msg=e.name==='AbortError'?'Se agotó el tiempo de espera. El servidor puede estar ocupado, intenta de nuevo.':'No se pudo conectar con el servidor. Verifica tu conexión o intenta en un momento.';appendBotMsg(msg);setConnDot(false);});
 }
 
 function appendMsg(role,text){
@@ -1461,7 +1461,7 @@ async function uploadFile(nombre,tipo,base64){
   archivos.push(obj);renderFileList();
   toast(`📤 Subiendo ${nombre}...`,'info');
   try{
-    const r=await apiPost('/subir-archivo',{archivo_base64:base64,nombre,tipo,cliente_asociado:''});
+    const r=await apiPost('/subir-archivo',{archivo_base64:base64,nombre,tipo,cliente_asociado:''},60000);
     const resp=await r.json();
     if(resp.success){
       obj.id_drive=resp.id;
@@ -1470,7 +1470,7 @@ async function uploadFile(nombre,tipo,base64){
       toast(`✅ ${nombre} subido. Analizando con IA...`,'ok');
       // Auto-analyze
       try{
-        const ar=await apiPost('/analizar-archivo',{id_archivo:obj.id_drive});
+        const ar=await apiPost('/analizar-archivo',{id_archivo:obj.id_drive},30000);
         const data=await ar.json();
         obj.analisis=data.analisis||data;
         obj.status='done';
