@@ -1023,8 +1023,9 @@ function tryUnlock(){
   const input=document.getElementById('lock-input');
   const pass=input.value;
   if(pass==='kiki2025'||pass==='kikijr'||pass==='Kiki2025'){
-    localStorage.setItem('kj_unlocked','true');
     document.getElementById('lockscreen').classList.add('unlocked');
+    document.getElementById('splash').style.display='flex';
+    setTimeout(hideSplash,1800);
     input.value='';
     document.getElementById('lock-error').classList.remove('show');
   }else{
@@ -1035,12 +1036,10 @@ function tryUnlock(){
   }
 }
 function checkLock(){
-  if(localStorage.getItem('kj_unlocked')==='true'){
-    document.getElementById('lockscreen').classList.add('unlocked');
-  }else{
-    document.getElementById('lockscreen').classList.remove('unlocked');
-    setTimeout(()=>document.getElementById('lock-input').focus(),500);
-  }
+  // SIEMPRE pedir contraseña al cargar la página (cada sesión)
+  sessionStorage.removeItem('kj_session');
+  document.getElementById('lockscreen').classList.remove('unlocked');
+  setTimeout(()=>document.getElementById('lock-input').focus(),500);
 }
 
 /* ─── SPLASH ─── */
@@ -2022,8 +2021,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
   }
   healthCheck();
   setInterval(healthCheck,60000);
-  // Splash screen - hide after 2s
-  setTimeout(hideSplash,2000);
+  // Splash: ocultar hasta que desbloqueen
+  document.getElementById('splash').style.display='none';
 })();
 </script>
 </body>
